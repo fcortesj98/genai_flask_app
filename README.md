@@ -137,71 +137,8 @@ Open http://127.0.0.1:5000 in your browser.
 
 ---
 
-## API
-
-### `POST /generate`
-
-**Request**
-
-```json
-{
-  "message": "My order arrived damaged and I want a refund.",
-  "model": "llama"
-}
-```
-
-`model` accepts `llama`, `granite`, or `mistral`.
-
-**Response**
-
-```json
-{
-  "summary": "Customer received a damaged order and is requesting a refund.",
-  "sentiment": 15,
-  "response": "I'm sorry your order arrived damaged. I can start a refund for you right away.",
-  "duration": 1.84
-}
-```
-
-**Errors**
-
-| Status | Condition |
-|---|---|
-| 400 | Missing `message` or `model`, or an unrecognized model name |
-| 500 | Model call or JSON parsing failed |
-
----
-
-## Notes and known quirks
-
-A few things worth knowing if you're picking this up or extending it:
-
-- **The UI only displays `response`.** The `summary` and `sentiment` fields come back from the model but aren't rendered. Surfacing sentiment as a colored badge is a natural next exercise.
-- **`config.py` defines `CREDENTIALS`, but `model.py` doesn't use it** — the URL and project ID are hardcoded in `initialize_model()`. Worth consolidating.
-- **`script.js` sets the default model to `'llama3'`**, which isn't one of the `<select>` options, so the browser falls back to the first option (`llama`). Harmless, but it should say `'llama'`.
-- **`llm_test.py` accesses `.content`** on the results, but `JsonOutputParser` returns plain dicts, so this will raise `AttributeError`. Print the dicts directly or index into them.
-- **`requirements.txt` is a full `pip freeze` of the lab environment.** It includes a lot of unrelated packages (Airflow, watsonx-orchestrate) and is missing `langchain-ibm` and `ibm-watsonx-ai`, which the app genuinely needs. Use the short `pip install` command above if the full file gives you trouble.
-- **Message content is inserted with `innerHTML`.** Fine for a local learning project, but a real deployment should use `textContent` or sanitize, since model output is rendered directly into the DOM.
-- **Debug mode is on** (`app.run(debug=True)`). Turn it off before deploying anywhere public.
-
----
-
-## Possible extensions
-
-- Display the sentiment score and summary in the chat UI
-- Keep conversation history and pass it to the model for multi-turn context
-- Add streaming responses instead of waiting for the full generation
-- Add retry logic for when a model returns malformed JSON
-- Extend into a RAG pipeline with a vector store, following the later courses in the certificate
-
----
-
 ## Acknowledgements
 
 Built as part of the [IBM RAG and Agentic AI Professional Certificate](https://www.coursera.org/professional-certificates/ibm-rag-and-agentic-ai), offered by IBM through Coursera. The certificate covers LangChain, LangGraph, RAG pipelines, vector databases, multimodal AI, and agentic frameworks such as CrewAI, AG2, BeeAI, and the Model Context Protocol.
 
 Model access is provided by [IBM watsonx.ai](https://www.ibm.com/products/watsonx-ai).
-
-## License
-
-MIT — see `LICENSE` if you add one.
